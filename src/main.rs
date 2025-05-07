@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use formatx::formatx;
 
 use clap::{Parser, Subcommand};
