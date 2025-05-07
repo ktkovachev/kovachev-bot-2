@@ -41,7 +41,7 @@ fn setup(action: Action) -> Result<(), std::io::Error> {
         match action {
             Action::Run => {panic!();}
             Action::Setup { username, botpassword, oauth2_token, api_url, rest_url } => {
-                let filled_in_config = formatx!(config_template, username, botpassword, oauth2_token).unwrap();
+                let filled_in_config = formatx!(config_template, api_url, rest_url, username, botpassword, oauth2_token).unwrap();
                 std::fs::write(shellexpand::tilde("~/.config/mwbot.toml").into_owned(), filled_in_config).unwrap();
             }
         }
