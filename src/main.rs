@@ -1,5 +1,4 @@
 use formatx::formatx;
-
 use clap::{Parser, Subcommand};
 use mwbot::parsoid::WikiMultinode;
 
