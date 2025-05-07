@@ -2,6 +2,7 @@ use formatx::formatx;
 use clap::{Parser, Subcommand};
 use mwbot::parsoid::WikiMultinode;
 
+const CONFIG_TEMPLATE_PATH: &'static str = "mwbot.toml";
 const BOT_CONFIG_PATH: &'static str = "~/.config/mwbot.toml";
 
 #[derive(Parser)]
@@ -41,7 +42,7 @@ enum Action {
 }
 
 fn setup(args: SetupArgs) -> Result<(), std::io::Error> {
-    if let Ok(config_template) = std::fs::read_to_string("mwbot.toml") {
+    if let Ok(config_template) = std::fs::read_to_string(CONFIG_TEMPLATE_PATH) {
         let filled_in_config = formatx!(config_template, args.api_url, args.rest_url, args.username, args.botpassword, args.oauth2_token).unwrap();
         std::fs::write(shellexpand::tilde(BOT_CONFIG_PATH).into_owned(), filled_in_config).unwrap();
         Ok(())
