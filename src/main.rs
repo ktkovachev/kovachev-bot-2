@@ -1,7 +1,11 @@
+use std::str::FromStr;
+
 use formatx::formatx;
 
 use clap::{Parser, Subcommand};
 use mwbot::parsoid::WikiMultinode;
+
+const BOT_CONFIG_PATH: &'static str = "~/.config/mwbot.toml";
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -41,7 +45,7 @@ fn setup(action: Action) -> Result<(), std::io::Error> {
             Action::Run => {panic!();}
             Action::Setup { username, botpassword, oauth2_token, api_url, rest_url } => {
                 let filled_in_config = formatx!(config_template, api_url, rest_url, username, botpassword, oauth2_token).unwrap();
-                std::fs::write(shellexpand::tilde("~/.config/mwbot.toml").into_owned(), filled_in_config).unwrap();
+                std::fs::write(shellexpand::tilde(BOT_CONFIG_PATH).into_owned(), filled_in_config).unwrap();
             }
         }
         Ok(())
@@ -59,7 +63,7 @@ async fn main() -> Result<(), std::io::Error> {
     match cli.action {
         action @ Action::Setup {..} => {
             setup(action)?;
-            eprintln!("Successfully set up ~/.config/mwbot.toml.")
+            eprintln!("Successfully set up {BOT_CONFIG_PATH}.")
         },
         Action::Run => {
             let bot = mwbot::Bot::from_default_config().await.unwrap();
