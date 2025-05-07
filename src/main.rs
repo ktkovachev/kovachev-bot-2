@@ -38,36 +38,32 @@ enum Action {
     },
 }
 
-fn setup() -> Result<(), &'static str> {
+fn setup() -> Result<(), std::io::Error> {
     if let Ok(config_template) = std::fs::read_to_string("mwbot.toml") {
 
         let username = env::var("MW_USERNAME").expect("The .env file must have a \"MW_USERNAME\" attribute.");
         let oauth2_token = env::var("MW_OAUTH2").expect("The .env file must have a \"MW_OAUTH2\" attribute.");
-        let botpassword = env::var("MW_BOTPASSWORD").expect("The .env file must have a \"MW_BOTPASSWORD\" attribute.");
+        let botpassword: String = env::var("MW_BOTPASSWORD").expect("The .env file must have a \"MW_BOTPASSWORD\" attribute.");
 
         let filled_in_config = formatx!(config_template, username, botpassword, oauth2_token).unwrap();
         std::fs::write(shellexpand::tilde("~/.config/mwbot.toml").into_owned(), filled_in_config).unwrap();
 
         Ok(())
     } else {
-        Err("Unable to find mwbot.toml; did you execute the script from the same directory?")
+        Err(std::io::Error::new(std::io::ErrorKind::NotFound, "Unable to find mwbot.toml; did you execute the script from the same directory?"))
     }
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), std::io::Error> {
     dotenvy::dotenv().expect("Couldn't load .env file; please make sure to create one in the same directory as executing from!");
 
     let cli = Cli::parse();
 
     match cli.action {
         Action::Setup => {
-            if let Err(err) = setup() {
-                eprintln!("{}", err);
-                exit(1);
-            } else {
-                eprintln!("Successfully set up ~/.config/mwbot.toml.");
-            }
+            setup()?;
+            eprintln!("Successfully set up ~/.config/mwbot.toml.")
         },
         Action::Run {username, botpassword, oauth2_token, api_url, rest_url} => {
             let bot = mwbot::Bot::builder(api_url, rest_url)
@@ -80,4 +76,5 @@ async fn main() {
             println!("{:?}", html.as_nodes());
         }
     }
+    Ok(())
 }
