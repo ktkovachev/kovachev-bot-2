@@ -1,4 +1,3 @@
-use std::process::exit;
 use std::env;
 use formatx::formatx;
 
