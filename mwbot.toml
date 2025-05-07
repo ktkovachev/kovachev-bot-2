@@ -1,0 +1,8 @@
+# Copy this to `~/.config/mwbot.toml`.
+api_url = "https://en.wiktionary.org/w/api.php"
+rest_url = "https://en.wiktionary.org/api/rest_v1"
+
+[auth]
+username = "{}"
+botpassword = "{}"
+oauth2_token = "{}"

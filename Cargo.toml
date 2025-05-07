@@ -1,0 +1,12 @@
+[package]
+name = "kovachevbot"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.37", features = ["derive", "env"] }
+dotenvy = "0.15.7"
+formatx = "0.2.4"
+mwbot = "0.6.1"
+shellexpand = "3.1.1"
+tokio = { version = "1.44.2", features = ["macros", "rt-multi-thread"] }
