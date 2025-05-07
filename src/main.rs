@@ -12,39 +12,38 @@ struct Cli {
     action: Action,
 }
 
+#[derive(Parser, Clone, Eq, PartialEq, PartialOrd, Ord)]
+struct SetupArgs {
+    /// Specify the username of the bot
+    #[arg(long, env = "MW_USERNAME")]
+    username: String,
+    /// Specify the botpassword of the bot
+    #[arg(long, env = "MW_BOTPASSWORD")]
+    botpassword: String,
+    /// Specify the OAuth2 token of the bot
+    #[arg(long, env = "MW_OAUTH2")]
+    oauth2_token: String,
+    /// Specify the API URL of the bot
+    #[arg(long, env = "MW_API_URL")]
+    api_url: String,
+    /// Specify the REST URL of the bot
+    #[arg(long, env = "MW_REST_URL")]
+    rest_url: String,
+    
+}
+
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Subcommand)]
 enum Action {
     /// Move config to ~/.config
-    Setup {
-        /// Specify the username of the bot
-        #[arg(long, env = "MW_USERNAME")]
-        username: String,
-        /// Specify the botpassword of the bot
-        #[arg(long, env = "MW_BOTPASSWORD")]
-        botpassword: String,
-        /// Specify the OAuth2 token of the bot
-        #[arg(long, env = "MW_OAUTH2")]
-        oauth2_token: String,
-        /// Specify the API URL of the bot
-        #[arg(long, env = "MW_API_URL")]
-        api_url: String,
-        /// Specify the REST URL of the bot
-        #[arg(long, env = "MW_REST_URL")]
-        rest_url: String,
-    },
+    Setup(SetupArgs),
     /// Run the bot
     Run,
 }
 
-fn setup(action: Action) -> Result<(), std::io::Error> {
+fn setup(args: SetupArgs) -> Result<(), std::io::Error> {
     if let Ok(config_template) = std::fs::read_to_string("mwbot.toml") {
-        match action {
-            Action::Run => {panic!();}
-            Action::Setup { username, botpassword, oauth2_token, api_url, rest_url } => {
-                let filled_in_config = formatx!(config_template, api_url, rest_url, username, botpassword, oauth2_token).unwrap();
-                std::fs::write(shellexpand::tilde(BOT_CONFIG_PATH).into_owned(), filled_in_config).unwrap();
-            }
-        }
+        let filled_in_config = formatx!(config_template, args.api_url, args.rest_url, args.username, args.botpassword, args.oauth2_token).unwrap();
+        std::fs::write(shellexpand::tilde(BOT_CONFIG_PATH).into_owned(), filled_in_config).unwrap();
         Ok(())
     } else {
         Err(std::io::Error::new(std::io::ErrorKind::NotFound, "Unable to find mwbot.toml; did you execute the script from the same directory?"))
@@ -58,8 +57,8 @@ async fn main() -> Result<(), std::io::Error> {
     let cli = Cli::parse();
 
     match cli.action {
-        action @ Action::Setup {..} => {
-            setup(action)?;
+        Action::Setup(args) => {
+            setup(args)?;
             eprintln!("Successfully set up {BOT_CONFIG_PATH}.")
         },
         Action::Run => {
