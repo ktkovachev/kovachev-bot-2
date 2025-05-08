@@ -41,7 +41,7 @@ struct SetupArgs {
 
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Subcommand)]
 enum Action {
-    /// Move config to ~/.config
+    /// Output a bot config to system's config directory
     Setup(SetupArgs),
     /// Run the bot
     Run,
