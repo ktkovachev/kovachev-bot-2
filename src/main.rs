@@ -46,6 +46,7 @@ fn setup(args: SetupArgs) -> Result<(), std::io::Error> {
     let filled_in_config = formatx!(config_template, args.api_url, args.rest_url, args.username, args.botpassword, args.oauth2_token).unwrap();
     let path = shellexpand::tilde(BOT_CONFIG_PATH).into_owned();
     std::fs::write(&path, filled_in_config).unwrap();
+    // Fix permissions on UNIX-like systems, since mwbot-rs doesn't like to read configs with loose permissions.
     {
         use std::os::unix::fs::PermissionsExt;
         std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
