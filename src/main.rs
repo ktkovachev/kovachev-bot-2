@@ -55,16 +55,18 @@ fn fill_config_template(config_template: String, args: SetupArgs) -> String {
     formatx!(config_template, args.api_url, args.rest_url, args.username, args.botpassword, args.oauth2_token).unwrap()
 }
 
+// Fix permissions on UNIX-like systems, since mwbot-rs doesn't like to read configs with loose permissions.
+fn constrain_unix_permissions(path: &PathBuf) -> Result<(), std::io::Error> {
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
+}
+
 fn setup(args: SetupArgs) -> Result<(), std::io::Error> {
     let config_template = read_config_template()?;
     let filled_in_config = fill_config_template(config_template, args);
     let path = get_bot_config_path();
     std::fs::write(&path, filled_in_config)?;
-    // Fix permissions on UNIX-like systems, since mwbot-rs doesn't like to read configs with loose permissions.
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
-    }
+    constrain_unix_permissions(&path)?;
     Ok(())
 }
 
