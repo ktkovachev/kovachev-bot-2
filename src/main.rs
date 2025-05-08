@@ -47,7 +47,7 @@ fn setup(args: SetupArgs) -> Result<(), std::io::Error> {
         std::fs::write(shellexpand::tilde(BOT_CONFIG_PATH).into_owned(), filled_in_config).unwrap();
         Ok(())
     } else {
-        Err(std::io::Error::new(std::io::ErrorKind::NotFound, "Unable to find mwbot_template.toml; did you execute the script from the same directory?"))
+        Err(std::io::Error::new(std::io::ErrorKind::NotFound, format!("Unable to find {}; did you execute the script from the same directory?", CONFIG_TEMPLATE_PATH)))
     }
 }
 
