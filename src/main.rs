@@ -55,7 +55,7 @@ fn setup(args: SetupArgs) -> Result<(), std::io::Error> {
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    dotenvy::dotenv().expect("Couldn't load .env file; please make sure to create one in the same directory as executing from!");
+    dotenvy::dotenv().inspect_err(|_| eprintln!("Couldn't load .env file; please make sure to create one in the same directory as executing from!")).ok();
 
     let cli = Cli::parse();
 
