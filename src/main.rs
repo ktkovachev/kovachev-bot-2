@@ -5,10 +5,10 @@ use mwbot::parsoid::WikiMultinode;
 use dirs::config_dir;
 
 const CONFIG_TEMPLATE_PATH: &'static str = "mwbot_template.toml";
-const BOT_CONFIG_FILENAME: &'static str = "mwbot.toml";
+const BOT_CONFIG_FILE_NAME: &'static str = "mwbot.toml";
 
 fn get_bot_config_path() -> PathBuf {
-    config_dir().unwrap().join(BOT_CONFIG_FILENAME)
+    config_dir().unwrap().join(BOT_CONFIG_FILE_NAME)
 }
 
 #[derive(Parser)]
@@ -36,7 +36,7 @@ struct SetupArgs {
     /// Specify the REST URL of the bot
     #[arg(long, env = "MW_REST_URL")]
     rest_url: String,
-    
+
 }
 
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Subcommand)]
