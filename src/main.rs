@@ -2,7 +2,7 @@ use formatx::formatx;
 use clap::{Parser, Subcommand};
 use mwbot::parsoid::WikiMultinode;
 
-const CONFIG_TEMPLATE_PATH: &'static str = "mwbot.toml";
+const CONFIG_TEMPLATE_PATH: &'static str = "mwbot_template.toml";
 const BOT_CONFIG_PATH: &'static str = "~/.config/mwbot.toml";
 
 #[derive(Parser)]
@@ -47,7 +47,7 @@ fn setup(args: SetupArgs) -> Result<(), std::io::Error> {
         std::fs::write(shellexpand::tilde(BOT_CONFIG_PATH).into_owned(), filled_in_config).unwrap();
         Ok(())
     } else {
-        Err(std::io::Error::new(std::io::ErrorKind::NotFound, "Unable to find mwbot.toml; did you execute the script from the same directory?"))
+        Err(std::io::Error::new(std::io::ErrorKind::NotFound, "Unable to find mwbot_template.toml; did you execute the script from the same directory?"))
     }
 }
 
