@@ -1,9 +1,15 @@
+use std::path::PathBuf;
 use formatx::formatx;
 use clap::{Parser, Subcommand};
 use mwbot::parsoid::WikiMultinode;
+use dirs::config_dir;
 
 const CONFIG_TEMPLATE_PATH: &'static str = "mwbot_template.toml";
-const BOT_CONFIG_PATH: &'static str = "~/.config/mwbot.toml";
+const BOT_CONFIG_FILENAME: &'static str = "mwbot.toml";
+
+fn get_bot_config_path() -> PathBuf {
+    config_dir().unwrap().join(BOT_CONFIG_FILENAME)
+}
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -44,7 +50,7 @@ enum Action {
 fn setup(args: SetupArgs) -> Result<(), std::io::Error> {
     let config_template = std::fs::read_to_string(CONFIG_TEMPLATE_PATH).or(Err(std::io::Error::new(std::io::ErrorKind::NotFound, format!("Unable to find {}; did you execute the script from the same directory?", CONFIG_TEMPLATE_PATH))))?;
     let filled_in_config = formatx!(config_template, args.api_url, args.rest_url, args.username, args.botpassword, args.oauth2_token).unwrap();
-    let path = shellexpand::tilde(BOT_CONFIG_PATH).into_owned();
+    let path = get_bot_config_path();
     std::fs::write(&path, filled_in_config).unwrap();
     // Fix permissions on UNIX-like systems, since mwbot-rs doesn't like to read configs with loose permissions.
     {
@@ -63,7 +69,7 @@ async fn main() -> Result<(), std::io::Error> {
     match cli.action {
         Action::Setup(args) => {
             setup(args)?;
-            eprintln!("Successfully set up {BOT_CONFIG_PATH}.")
+            eprintln!("Successfully set up {}.", get_bot_config_path().to_str().unwrap())
         },
         Action::Run => {
             let bot = mwbot::Bot::from_default_config().await.unwrap();

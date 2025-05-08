@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.37", features = ["derive", "env"] }
+dirs = "6.0.0"
 dotenvy = "0.15.7"
 formatx = "0.2.4"
 mwbot = "0.6.1"
