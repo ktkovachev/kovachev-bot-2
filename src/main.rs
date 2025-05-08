@@ -26,7 +26,7 @@ struct SetupArgs {
     username: String,
     /// Specify the botpassword of the bot
     #[arg(long, env = "MW_BOTPASSWORD")]
-    botpassword: String,
+    botpassword: Option<String>,
     /// Specify the OAuth2 token of the bot
     #[arg(long, env = "MW_OAUTH2")]
     oauth2_token: String,
@@ -52,7 +52,7 @@ fn read_config_template() -> Result<String, std::io::Error> {
 }
 
 fn fill_config_template(config_template: String, args: SetupArgs) -> String {
-    formatx!(config_template, args.api_url, args.rest_url, args.username, args.botpassword, args.oauth2_token).unwrap()
+    formatx!(config_template, args.api_url, args.rest_url, args.username, args.botpassword.unwrap_or("".into()), args.oauth2_token).unwrap()
 }
 
 // Fix permissions on UNIX-like systems, since mwbot-rs doesn't like to read configs with loose permissions.
