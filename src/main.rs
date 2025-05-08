@@ -47,9 +47,13 @@ enum Action {
     Run,
 }
 
+fn fill_config_template(config_template: String, args: SetupArgs) -> String {
+    formatx!(config_template, args.api_url, args.rest_url, args.username, args.botpassword, args.oauth2_token).unwrap()
+}
+
 fn setup(args: SetupArgs) -> Result<(), std::io::Error> {
     let config_template = std::fs::read_to_string(CONFIG_TEMPLATE_PATH).or(Err(std::io::Error::new(std::io::ErrorKind::NotFound, format!("Unable to find {}; did you execute the script from the same directory?", CONFIG_TEMPLATE_PATH))))?;
-    let filled_in_config = formatx!(config_template, args.api_url, args.rest_url, args.username, args.botpassword, args.oauth2_token).unwrap();
+    let filled_in_config = fill_config_template(config_template, args);
     let path = get_bot_config_path();
     std::fs::write(&path, filled_in_config)?;
     // Fix permissions on UNIX-like systems, since mwbot-rs doesn't like to read configs with loose permissions.
