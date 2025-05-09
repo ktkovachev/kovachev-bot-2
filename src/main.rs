@@ -104,6 +104,7 @@ fn setup(args: SetupArgs) -> Result<(), std::io::Error> {
     let filled_in_config = fill_config_template(config_template, args);
     let path = get_bot_config_path();
     std::fs::write(&path, filled_in_config)?;
+    #[cfg(unix)]
     constrain_unix_permissions(&path)?;
     Ok(())
 }
