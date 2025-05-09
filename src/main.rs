@@ -19,6 +19,27 @@ struct Cli {
     action: Action,
 }
 
+#[derive(clap::Args, Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
+#[group(required = true, multiple = false)]
+struct AuthMethodParse {
+    password: Option<String>,
+    oauth2_token: Option<String>
+}
+
+enum AuthMethod {
+    Password(String),
+    OAuth2Token(String)
+}
+
+impl From<AuthMethodParse> for AuthMethod {
+    fn from (parsed_args: AuthMethodParse) -> AuthMethod {
+        match parsed_args.password {
+            None => Self::OAuth2Token(parsed_args.oauth2_token.unwrap()),
+            Some(password) => Self::Password(password)
+        }
+    }
+}
+
 #[derive(Parser, Clone, Eq, PartialEq, PartialOrd, Ord)]
 struct SetupArgs {
     /// Specify the username of the bot
