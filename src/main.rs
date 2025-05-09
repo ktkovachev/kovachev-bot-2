@@ -22,7 +22,11 @@ struct Cli {
 #[derive(clap::Args, Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
 #[group(required = true, multiple = false)]
 struct AuthMethodParse {
+    /// Specify the password of the bot
+    #[arg(long, env = "MW_BOTPASSWORD")]
     password: Option<String>,
+    /// Specify the OAuth2 token of the bot
+    #[arg(long, env = "MW_OAUTH2")]
     oauth2_token: Option<String>
 }
 
@@ -45,12 +49,11 @@ struct SetupArgs {
     /// Specify the username of the bot
     #[arg(long, env = "MW_USERNAME")]
     username: String,
-    /// Specify the botpassword of the bot
-    #[arg(long, env = "MW_BOTPASSWORD")]
-    botpassword: Option<String>,
-    /// Specify the OAuth2 token of the bot
-    #[arg(long, env = "MW_OAUTH2")]
-    oauth2_token: String,
+
+    /// Specify the password or OAuth2 key for the bot
+    #[clap(flatten)]
+    auth_phrase: AuthMethodParse,
+
     /// Specify the API URL of the bot
     #[arg(long, env = "MW_API_URL")]
     api_url: String,
@@ -73,7 +76,18 @@ fn read_config_template() -> Result<String, std::io::Error> {
 }
 
 fn fill_config_template(config_template: String, args: SetupArgs) -> String {
-    formatx!(config_template, args.api_url, args.rest_url, args.username, args.botpassword.unwrap_or("".into()), args.oauth2_token).unwrap()
+    let mut filled = formatx!(config_template, args.api_url, args.rest_url, args.username).unwrap();
+    let chosen_method: AuthMethod = args.auth_phrase.into();
+    match chosen_method {
+        AuthMethod::Password(password) => {
+            filled.push_str(format!("password = \"{}\"", password).as_str());
+        },
+        AuthMethod::OAuth2Token(oauth2_token) => {
+            filled.push_str(format!("oauth2_token = \"{}\"", oauth2_token).as_str());
+        }
+    }
+    filled.push('\n');
+    filled
 }
 
 // Fix permissions on UNIX-like systems, since mwbot-rs doesn't like to read configs with loose permissions.

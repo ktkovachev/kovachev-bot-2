@@ -4,5 +4,3 @@ rest_url = "{}"
 
 [auth]
 username = "{}"
-# password = "{}"
-oauth2_token = "{}"
