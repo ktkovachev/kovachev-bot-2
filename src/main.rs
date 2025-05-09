@@ -80,13 +80,12 @@ fn fill_config_template(config_template: String, args: SetupArgs) -> String {
     let auth_method: AuthMethod = args.auth_phrase.into();
     match auth_method {
         AuthMethod::Password(password) => {
-            filled.push_str(format!("password = \"{}\"", password).as_str());
+            filled.push_str(format!("password = \"{}\"\n", password).as_str());
         },
         AuthMethod::OAuth2Token(oauth2_token) => {
-            filled.push_str(format!("oauth2_token = \"{}\"", oauth2_token).as_str());
+            filled.push_str(format!("oauth2_token = \"{}\"\n", oauth2_token).as_str());
         }
     }
-    filled.push('\n');
     filled
 }
 
