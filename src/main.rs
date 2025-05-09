@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 use formatx::formatx;
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 use mwbot::parsoid::WikiMultinode;
 use dirs::config_dir;
 
@@ -19,7 +19,7 @@ struct Cli {
     action: Action,
 }
 
-#[derive(clap::Args, Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(Args, Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
 #[group(required = true, multiple = false)]
 struct AuthMethodParse {
     /// Specify the password of the bot
