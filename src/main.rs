@@ -77,8 +77,8 @@ fn read_config_template() -> Result<String, std::io::Error> {
 
 fn fill_config_template(config_template: String, args: SetupArgs) -> String {
     let mut filled = formatx!(config_template, args.api_url, args.rest_url, args.username).unwrap();
-    let chosen_method: AuthMethod = args.auth_phrase.into();
-    match chosen_method {
+    let auth_method: AuthMethod = args.auth_phrase.into();
+    match auth_method {
         AuthMethod::Password(password) => {
             filled.push_str(format!("password = \"{}\"", password).as_str());
         },
