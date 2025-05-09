@@ -75,15 +75,19 @@ fn read_config_template() -> Result<String, std::io::Error> {
     std::fs::read_to_string(CONFIG_TEMPLATE_PATH).or(Err(std::io::Error::new(std::io::ErrorKind::NotFound, format!("Unable to find {}; did you execute the script from the same directory?", CONFIG_TEMPLATE_PATH))))
 }
 
+fn create_toml_line(field_name: &str, value: &str) -> String {
+    format!("{} = \"{}\"\n", field_name, value)
+}
+
 fn fill_config_template(config_template: String, args: SetupArgs) -> String {
     let mut filled = formatx!(config_template, args.api_url, args.rest_url, args.username).unwrap();
     let auth_method: AuthMethod = args.auth_phrase.into();
     match auth_method {
         AuthMethod::Password(password) => {
-            filled.push_str(format!("password = \"{}\"\n", password).as_str());
+            filled.push_str(&create_toml_line("password", &password));
         },
         AuthMethod::OAuth2Token(oauth2_token) => {
-            filled.push_str(format!("oauth2_token = \"{}\"\n", oauth2_token).as_str());
+            filled.push_str(&create_toml_line("oauth2_token", &oauth2_token));
         }
     }
     filled
